@@ -2,6 +2,12 @@
 
 If you want to setup your infrastucture, services in your workshops, small projects, you should use this repository.
 
+## Notes
+
+- You need to read the `README.md` carefully.
+- You need to the fundamentation of AWS Services deployment.
+- This repository **_isn't good_** for newcomers.
+
 ## Requirements
 
 1. Terraform
