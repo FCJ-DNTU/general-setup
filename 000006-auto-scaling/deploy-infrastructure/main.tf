@@ -1,7 +1,8 @@
 locals {
   region = "ap-southeast-1"
   author = "FCJ-DNTU"
-  root_name = "aslab"
+  network_root_name = "AutoScaling-Lab"
+  compute_root_name = "FCJ-Management"
   vpc_cidr = "10.0.0.0/16"
 }
 
@@ -25,7 +26,7 @@ resource "aws_vpc" "aslab" {
   enable_dns_hostnames = true
   enable_dns_support = true
   tags = {
-    Name = local.root_name
+    Name = local.network_root_name
     Type = "VPC"
     Author = local.author
   }
@@ -38,7 +39,7 @@ resource "aws_subnet" "public_subnet_1" {
   map_public_ip_on_launch = true
   availability_zone = "${local.region}a"
   tags = {
-    Name = "${local.root_name}_public_subnet_1"
+    Name = "${local.network_root_name}_public_subnet_1"
     Type = "Subnet"
     Author = local.author
   }
@@ -49,7 +50,7 @@ resource "aws_subnet" "private_subnet_1" {
   cidr_block = "10.0.2.0/24"
   availability_zone = "${local.region}a"
   tags = {
-    Name = "${local.root_name}_private_subnet_1"
+    Name = "${local.network_root_name}_private_subnet_1"
     Type = "Subnet"
     Author = local.author
   }
@@ -61,7 +62,7 @@ resource "aws_subnet" "public_subnet_2" {
   map_public_ip_on_launch = true
   availability_zone = "${local.region}b"
   tags = {
-    Name = "${local.root_name}_public_subnet_2"
+    Name = "${local.network_root_name}_public_subnet_2"
     Type = "Subnet"
     Author = local.author
   }
@@ -72,7 +73,7 @@ resource "aws_subnet" "private_subnet_2" {
   cidr_block = "10.0.4.0/24"
   availability_zone = "${local.region}b"
   tags = {
-    Name = "${local.root_name}_private_subnet_2"
+    Name = "${local.network_root_name}_private_subnet_2"
     Type = "Subnet"
     Author = local.author
   }
@@ -84,7 +85,7 @@ resource "aws_subnet" "public_subnet_3" {
   map_public_ip_on_launch = true
   availability_zone = "${local.region}c"
   tags = {
-    Name = "${local.root_name}_public_subnet_3"
+    Name = "${local.network_root_name}_public_subnet_3"
     Type = "Subnet"
     Author = local.author
   }
@@ -95,7 +96,7 @@ resource "aws_subnet" "private_subnet_3" {
   cidr_block = "10.0.6.0/24"
   availability_zone = "${local.region}c"
   tags = {
-    Name = "${local.root_name}_private_subnet_3"
+    Name = "${local.network_root_name}_private_subnet_3"
     Type = "Subnet"
     Author = local.author
   }
@@ -105,7 +106,7 @@ resource "aws_subnet" "private_subnet_3" {
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.aslab.id
   tags = {
-    Name = "${local.root_name}_igw"
+    Name = "${local.network_root_name}_igw"
     Type = "Internet_Gateway"
     Author = local.author
   }
@@ -128,7 +129,7 @@ resource "aws_route_table" "public_route_table_1" {
   }
 
   tags = {
-    Name = "${local.root_name}_public_route_table_1"
+    Name = "${local.network_root_name}_public_route_table_1"
     Type = "Route_Table"
     Author = local.author
   }
@@ -144,7 +145,7 @@ resource "aws_route_table" "private_route_table_1" {
   }
 
   tags = {
-    Name = "${local.root_name}_private_route_table_1"
+    Name = "${local.network_root_name}_private_route_table_1"
     Type = "Route_Table"
     Author = local.author
   }
@@ -185,7 +186,7 @@ resource "aws_security_group" "public_sg" {
   description = "Allow access to server"
   vpc_id = aws_vpc.aslab.id
   tags = {
-    Name = "${local.root_name}_public_sg"
+    Name = "${local.network_root_name}_public_sg"
     Type = "Security_Group"
     Author = local.author
   }
@@ -200,7 +201,7 @@ resource "aws_vpc_security_group_ingress_rule" "public_sg_inbound_1" {
   # Protocol
   ip_protocol = "tcp"
   tags = {
-    Name = "${local.root_name}_public_sg_inbound_1"
+    Name = "${local.network_root_name}_public_sg_inbound_1"
     Type = "Security_Group"
     Author = local.author
   }
@@ -215,7 +216,7 @@ resource "aws_vpc_security_group_ingress_rule" "public_sg_inbound_2" {
   # Protocol
   ip_protocol = "tcp"
   tags = {
-    Name = "${local.root_name}_public_sg_inbound_2"
+    Name = "${local.network_root_name}_public_sg_inbound_2"
     Type = "Security_Group"
     Author = local.author
   }
@@ -230,7 +231,7 @@ resource "aws_vpc_security_group_ingress_rule" "public_sg_inbound_3" {
   # Protocol
   ip_protocol = "tcp"
   tags = {
-    Name = "${local.root_name}_public_sg_inbound_3"
+    Name = "${local.network_root_name}_public_sg_inbound_3"
     Type = "Security_Group"
     Author = local.author
   }
@@ -245,7 +246,7 @@ resource "aws_vpc_security_group_ingress_rule" "public_sg_inbound_4" {
   # Protocol
   ip_protocol = "tcp"
   tags = {
-    Name = "${local.root_name}_public_sg_inbound_4"
+    Name = "${local.network_root_name}_public_sg_inbound_4"
     Type = "Security_Group"
     Author = local.author
   }
@@ -256,7 +257,7 @@ resource "aws_vpc_security_group_egress_rule" "public_sg_outbound" {
   cidr_ipv4 = "0.0.0.0/0"
   ip_protocol = "-1"
   tags = {
-    Name = "${local.root_name}_public_sg_outbound_1"
+    Name = "${local.network_root_name}_public_sg_outbound_1"
     Type = "Security_Group"
     Author = local.author
   }
@@ -266,7 +267,7 @@ resource "aws_security_group" "db_sg" {
   description = "Allow server access to database server"
   vpc_id = aws_vpc.aslab.id
   tags = {
-    Name = "${local.root_name}_db_sg"
+    Name = "${local.network_root_name}_db_sg"
     Type = "Security_Group"
     Author = local.author
   }
@@ -281,7 +282,7 @@ resource "aws_vpc_security_group_ingress_rule" "db_sg_inbound" {
   # Protocol
   ip_protocol = "tcp"
   tags = {
-    Name = "${local.root_name}_db_sg_inbound"
+    Name = "${local.network_root_name}_db_sg_inbound"
     Type = "Security_Group"
     Author = local.author
   }
@@ -292,7 +293,7 @@ resource "aws_vpc_security_group_egress_rule" "private_terra_sg_outbound" {
   cidr_ipv4 = "0.0.0.0/0"
   ip_protocol = "-1"
   tags = {
-    Name = "${local.root_name}_db_sg_outbound"
+    Name = "${local.network_root_name}_db_sg_outbound"
     Type = "Security_Group"
     Author = local.author
   }
@@ -305,11 +306,11 @@ resource "aws_instance" "my_server" {
   key_name = "aptopus-ai"
   subnet_id = aws_subnet.public_subnet_1.id
   vpc_security_group_ids = [
-    "${aws_security_group.public_sg.id}"
+    aws_security_group.public_sg.id
   ]
 
   tags = {
-    Name = "${local.root_name}_my_server"
+    Name = "${local.compute_root_name}_my_server"
     Type = "EC2"
     Author = local.author
   }
@@ -325,7 +326,7 @@ resource "aws_db_subnet_group" "subnet_group" {
   ]
 
   tags = {
-    Name = "${local.root_name}_private_subnet_group"
+    Name = "${local.compute_root_name}_private_subnet_group"
     Type = "RDS_Subnet_Group"
     Author = local.author
   }
@@ -333,7 +334,7 @@ resource "aws_db_subnet_group" "subnet_group" {
 
 ## Setup Multi-AZ DB Instance
 resource "aws_db_instance" "rds" {
-  identifier = "${local.root_name}-rds"
+  identifier = "${lower(local.compute_root_name)}-db-instance"
   engine = "mysql"
   engine_version = "8.0.35"
   instance_class = "db.m5.large"
@@ -342,20 +343,20 @@ resource "aws_db_instance" "rds" {
   storage_type = "gp2"
   username = "fcjdntu"
   password = "letmein12345"
-  db_name = "master"
+  db_name = "awsfcjuser"
   port = 3306
   publicly_accessible = false
   skip_final_snapshot = true
   db_subnet_group_name = aws_db_subnet_group.subnet_group.name
   vpc_security_group_ids = [
-    "${aws_security_group.db_sg.id}"
+    aws_security_group.db_sg.id
   ]
   
   tags = {
-    Name           = "${local.root_name}_database_server"
-    Type           = "RDS_Instance"
+    Name = "${local.compute_root_name}_database_server"
+    Type = "RDS_Instance"
     DatabaseEngine = "MySQL"
-    Author         = local.author
+    Author = local.author
   }
 }
 
@@ -364,19 +365,19 @@ resource "aws_lb" "load_balancer" {
   load_balancer_type = "application"
   internal = false
   security_groups = [
-    "${aws_security_group.public_sg.id}"
+    aws_security_group.public_sg.id
   ]
   ip_address_type = "ipv4"
   subnets = [
-    "${aws_subnet.public_subnet_1.id}",
-    "${aws_subnet.public_subnet_2.id}",
-    "${aws_subnet.public_subnet_3.id}"
+    aws_subnet.public_subnet_1.id,
+    aws_subnet.public_subnet_2.id,
+    aws_subnet.public_subnet_3.id
   ]
 
   tags = {
-    Name           = "${local.root_name}_load_balancer"
-    Type           = "Load_Balancer"
-    Author         = local.author
+    Name = "${local.compute_root_name}_load_balancer"
+    Type = "Load_Balancer"
+    Author = local.author
   }
 }
 
@@ -410,7 +411,7 @@ output "server_id" {
 }
 
 output "server_arn" {
-  value = aws_instance.my_server.public_arn
+  value = aws_instance.my_server.arn
 }
 
 output "server_dns" {
@@ -421,16 +422,22 @@ output "database_id" {
   value = aws_db_instance.rds.id
 }
 
+output "database_endpoint" {
+  value = aws_db_instance.rds.endpoint
+}
+
 output "database_arn" {
   value = aws_db_instance.rds.arn
 }
 
 output "database_user" {
   value = aws_db_instance.rds.username
+  sensitive = true
 }
 
 output "database_password" {
   value = aws_db_instance.rds.password
+  sensitive = true
 }
 
 output "load_balancer_id" {
