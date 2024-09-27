@@ -253,4 +253,4 @@ connected as ID **
 
 Copy public dns of EC2 instance of server in Terraform Outputs or in Management Console and append `:5000` behind it. We'll receive an result
 
-**INSERT IMAGE HERE**
+![3](https://github.com/user-attachments/assets/568ddfe9-2c10-4e51-bb20-d99121b08a98)
