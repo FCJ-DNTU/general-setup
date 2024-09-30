@@ -303,6 +303,7 @@ resource "aws_vpc_security_group_egress_rule" "private_terra_sg_outbound" {
 resource "aws_instance" "my_server" {
   ami = "ami-0aa097a5c0d31430a"
   instance_type = "t2.micro"
+  # Change your key-pair here
   key_name = "aptopus-ai"
   subnet_id = aws_subnet.public_subnet_1.id
   vpc_security_group_ids = [
@@ -377,6 +378,43 @@ resource "aws_lb" "load_balancer" {
   tags = {
     Name = "${local.compute_root_name}_load_balancer"
     Type = "Load_Balancer"
+    Author = local.author
+  }
+}
+
+# Setup target group
+resource "aws_lb_target_group" "target_group" {
+  port = 5000
+  protocol = "HTTP"
+  vpc_id = aws_vpc.aslab.id
+  target_type = "instance"
+
+  tags = {
+    Name = "${local.compute_root_name}_target_group"
+    Type = "Target_Group"
+    Author = local.author
+  }
+}
+
+resource "aws_lb_target_group_attachment" "tg_attachment" {
+  target_group_arn = aws_lb_target_group.target_group.arn
+  target_id = aws_instance.my_server.id
+  port = 5000
+}
+
+resource "aws_lb_listener" "public_listener" {
+  load_balancer_arn = aws_lb.load_balancer.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target_group.arn
+  }
+
+  tags = {
+    Name = "${local.compute_root_name}_listener"
+    Type = "LB_Listener"
     Author = local.author
   }
 }

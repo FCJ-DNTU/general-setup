@@ -13,6 +13,8 @@ In this section, we need to deploy
 
 > Note: in future, we'll use jenkins (inside a docker container) to deploy our application. But for now, we have to deploy it manualy.
 
+> Note: you should configure another key-pair in `aws_instance` block. And configure ASG later, so we you destroy the infrastructure, please make you clean up ASG first.
+
 ## Steps
 
 ## 1 - Deploy the infrastructure
@@ -57,7 +59,7 @@ Result Logs:
 aws_db_instance.rds: Still creating... [11m39s elapsed]
 aws_db_instance.rds: Creation complete after 11m48s [id=db-RHGNL3HTBGBPBHBJJO637MOYK4]
 
-Apply complete! Resources: 29 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 31 added, 0 changed, 0 destroyed.
 
 Outputs:
 
@@ -131,7 +133,7 @@ mysql --version
 mysql  Ver 15.1 Distrib 10.5.25-MariaDB, for Linux (x86_64) using  EditLine wrapper
 ```
 
-Now, copy the endpoint of RDS in Terminal (Terraform Output) or in Management Console. Then we connect to this database server
+Now, copy the endpoint of RDS (`database_endpoint`) in Terminal (Terraform Output) or in Management Console. Then we connect to this database server
 
 ```bash
 mysql -h "your-rds-endpoint" -P 3306 -u fcjdntu -p
@@ -165,6 +167,8 @@ USE awsfcjuser;
 ```
 
 Go to `deploy-application/init.sql`, copy all scripts and run.
+
+Run this query and you will receive a result
 
 ```bash
 SELECT * FROM user;
@@ -200,7 +204,7 @@ SELECT * FROM user;
 We have to install git
 
 ```bash
-yum instal git
+sudo yum instal git
 ```
 
 Use `Ctrl + D` to exist Root User and clone this repository
@@ -215,38 +219,97 @@ Change directory to `000004-EC2`
 cd 000004-EC2
 ```
 
-Install NodeJS dependencies
+Install dependencies of NodeJS
 
 ```bash
 npm install
 ```
 
+Install PM2
+
+```bash
+npm install -g pm2
+```
+
+> Note: We'll need to create Launch template with this instance, so we should install pm2 and run our server as daemon and run when instasnce is startup.
+
 Set up env
 
 ```bash
-export DB_HOST="your-rds-endpoint"
-export DB_NAME="awsfcjuser"
-export DB_USER="fcjdntu"
-export DB_PASS="letmein12345"
-```
-
-Run server
-
-```bash
-npm start
+vim .env
 ```
 
 ```bash
-> simple-crudapp@1.0.0 start
-> nodemon app.js
+DB_HOST="your-rds-endpoint"
+DB_NAME="awsfcjuser"
+DB_USER="fcjdntu"
+DB_PASS="letmein12345"
+```
 
-[nodemon] 2.0.16
-[nodemon] to restart at any time, enter `rs`
-[nodemon] watching path(s): *.*
-[nodemon] watching extensions: js,mjs,json
-[nodemon] starting `node app.js`
-Listening on port 5000
-connected as ID **
+Run server with pm2
+
+```bash
+pm2 start app.js
+```
+
+Result Logs:
+
+```bash
+...
+[PM2] Spawning PM2 daemon with pm2_home=/home/ec2-user/.pm2
+[PM2] PM2 Successfully daemonized
+[PM2] Starting /home/ec2-user/000004-EC2/app.js in fork_mode (1 instance)
+[PM2] Done.
+┌────┬────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name   │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ app    │ default     │ 1.0.0   │ fork    │ 27842    │ 0s     │ 0    │ online    │ 0%       │ 38.3mb   │ ec2-user │ disabled │
+└────┴────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+```
+
+Create a start up script in **systemd**
+
+```bash
+pm2 startup
+```
+
+Receive a logs like this
+
+```bash
+...
+[PM2] Init System found: systemd
+[PM2] To setup the Startup Script, copy/paste the following command:
+sudo env PATH=$PATH:/home/ec2-user/.nvm/versions/node/v20.17.0/bin /home/ec2-user/.nvm/versions/node/v20.17.0/lib/node_modules/pm2/bin/pm2 startup systemd -u ec2-user --hp /home/ec2-user
+```
+
+Copy the following command and run, then we'll receive a result
+
+```bash
+...
+[PM2] Writing init configuration in /etc/systemd/system/pm2-ec2-user.service
+[PM2] Making script booting at startup...
+[PM2] [-] Executing: systemctl enable pm2-ec2-user...
+Created symlink /etc/systemd/system/multi-user.target.wants/pm2-ec2-user.service → /etc/systemd/system/pm2-ec2-user.service.
+[PM2] [v] Command successfully executed.
++---------------------------------------+
+[PM2] Freeze a process list on reboot via:
+$ pm2 save
+
+[PM2] Remove init script via:
+$ pm2 unstartup systemd
+```
+
+Finally, we should save this process list
+
+```bash
+pm2 save
+```
+
+Result Logs:
+
+```bash
+[PM2] Saving current process list...
+[PM2] Successfully saved in /home/ec2-user/.pm2/dump.pm2
 ```
 
 ## 3 - View result
