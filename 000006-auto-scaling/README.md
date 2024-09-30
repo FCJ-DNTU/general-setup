@@ -314,6 +314,10 @@ Result Logs:
 
 ## 3 - View result
 
-Copy public dns of EC2 instance of server in Terraform Outputs or in Management Console and append `:5000` behind it. We'll receive an result
+Go back to Load Balancer console, enter the LB which is created before. Go to tab **Resource map - new** and check
 
-![3](https://github.com/user-attachments/assets/568ddfe9-2c10-4e51-bb20-d99121b08a98)
+![image](https://github.com/user-attachments/assets/8cec29a9-c641-47b6-9ed5-15a71a2ee7b2)
+
+You can see the target is health. Now copy public dns of Load Balancer, paste to address bar of browser, hit enter and see the result
+
+![image](https://github.com/user-attachments/assets/a7e00db5-b9fa-4e00-abcd-c37dd3903ff7)
