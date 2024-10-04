@@ -4,6 +4,10 @@ locals {
   network_root_name = "AutoScaling-Lab"
   compute_root_name = "FCJ-Management"
   vpc_cidr = "10.0.0.0/16"
+  db_username = "fcjdntu"
+  db_password = "letmein12345"
+  db_name = "awsfcjuser"
+  key_name = "aptopus-ai"
 }
 
 # Setup provider
@@ -301,10 +305,11 @@ resource "aws_vpc_security_group_egress_rule" "private_terra_sg_outbound" {
 
 # Setup EC2 Instance
 resource "aws_instance" "my_server" {
+  # Use Amazon Linux 2023
   ami = "ami-0aa097a5c0d31430a"
   instance_type = "t2.micro"
   # Change your key-pair here
-  key_name = "aptopus-ai"
+  key_name = local.key_name
   subnet_id = aws_subnet.public_subnet_1.id
   vpc_security_group_ids = [
     aws_security_group.public_sg.id
@@ -342,9 +347,9 @@ resource "aws_db_instance" "rds" {
   allocated_storage = 20
   multi_az = true
   storage_type = "gp2"
-  username = "fcjdntu"
-  password = "letmein12345"
-  db_name = "awsfcjuser"
+  username = local.db_username
+  password = local.db_password
+  db_name = local.db_name
   port = 3306
   publicly_accessible = false
   skip_final_snapshot = true
@@ -428,6 +433,30 @@ output "vpc_arn" {
   value = aws_vpc.aslab.arn
 }
 
+output "public_subnet_1_id" {
+  value = aws_subnet.public_subnet_1.id
+}
+
+output "public_subnet_2_id" {
+  value = aws_subnet.public_subnet_2.id
+}
+
+output "public_subnet_3_id" {
+  value = aws_subnet.public_subnet_3.id
+}
+
+output "private_subnet_1_id" {
+  value = aws_subnet.private_subnet_1.id
+}
+
+output "private_subnet_2_id" {
+  value = aws_subnet.private_subnet_2.id
+}
+
+output "private_subnet_3_id" {
+  value = aws_subnet.private_subnet_3.id
+}
+
 output "public_sg_id" {
   value = aws_security_group.public_sg.id
 }
@@ -444,7 +473,7 @@ output "db_sg_arn" {
   value = aws_security_group.db_sg.arn
 }
 
-output "server_id" {
+output "server_instance_id" {
   value = aws_instance.my_server.id
 }
 
@@ -468,20 +497,18 @@ output "database_arn" {
   value = aws_db_instance.rds.arn
 }
 
-output "database_user" {
-  value = aws_db_instance.rds.username
-  sensitive = true
-}
-
-output "database_password" {
-  value = aws_db_instance.rds.password
-  sensitive = true
-}
-
 output "load_balancer_id" {
   value = aws_lb.load_balancer.id
 }
 
 output "load_balancer_arn" {
   value = aws_lb.load_balancer.arn
+}
+
+output "target_group_id" {
+  value = aws_lb_target_group.target_group.id
+}
+
+output "target_group_arn" {
+  value = aws_lb_target_group.target_group.arn
 }

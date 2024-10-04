@@ -5,5 +5,8 @@ node_modules
 terraform.*
 package-lock.json
 
+**/key/*
+
 # Exlude ignore
 !terraform.tf
+!README.md
