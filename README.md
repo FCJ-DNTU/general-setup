@@ -50,22 +50,8 @@ Then tell Terraform apply the plan to deploy our infrastructure
 terraform apply
 ```
 
-Result Logs:
-
-```bash
-...
-aws_db_instance.rds: Still creating... [11m39s elapsed]
-aws_db_instance.rds: Creation complete after 11m48s [id=db-RHGNL3HTBGBPBHBJJO637MOYK4]
-
-Apply complete! Resources: 32 added, 0 changed, 0 destroyed.
-
-Outputs:
-
-database_arn = "arn:aws:rds:ap-southeast-1:<your-account-id>:db:fcj-management-db-instance"
-database_id = "db-RHGNL3HTBGBPBHBJJO637MOYK4"
-database_password = <sensitive>
-...
-```
+Result:
+![2024-10-04_140055](https://github.com/user-attachments/assets/ec37dbf2-6b43-4c74-8036-7da19ec41ece)
 
 ## 2 - Deploy application
 
@@ -74,7 +60,11 @@ Before we go to these steps, you should do something:
 - Copy your SSH private key (of EC2) to `key` directory.
 - Copy all of Terraform outputs in the previous test.
 
-Change directory to `000006-auto-scaling`, copy the content of `deploy-application` to the EC2 which is created
+Change directory to `000006-auto-scaling`, you need to change the environment variable in `deploy.sh` script first
+
+![2024-10-04_140139](https://github.com/user-attachments/assets/e993c9cd-8280-460b-a2ac-5d53f13553be)
+
+Copy the content of `deploy-application` to the EC2 which is created.
 
 ```bash
 chmod 400 key/key-name.pem
@@ -83,12 +73,13 @@ scp -i key/key-name.pem -r deploy-application ec2-user@"ec2-public-ipv4":/home/e
 
 Result
 
-**INSERT IMAGE HERE**
+![2024-10-04_141914](https://github.com/user-attachments/assets/4842b40e-6f34-4132-b183-8081eaba4ff4)
 
 Connect SSH to the EC2 Instance
 
-**INSERT IMAGE HERE**
-**INSERT IMAGE HERE**
+![2024-10-04_135821](https://github.com/user-attachments/assets/9aea31a1-92d8-48e4-be73-892d179fe06c)
+![2024-10-04_135838](https://github.com/user-attachments/assets/42c097ed-ab2b-4da0-8297-316402a4a2f9)
+![2024-10-04_141944](https://github.com/user-attachments/assets/b19dfc20-09bc-4621-9041-fb1d4a176603)
 
 Run the `deploy.sh` script
 
@@ -100,7 +91,7 @@ bash deploy.sh
 
 You'll be asked for DB Password, just type it and the deployment will be continute. PLEASE, TYPE CAREFULLY!!!
 
-**INSERT IMAGE HERE**
+![2024-10-04_145649](https://github.com/user-attachments/assets/edc3929b-f4bf-476a-8e31-2fabe793c888)
 
 In the case you type the password incorrectly, you can use the script bellow.
 
@@ -112,8 +103,7 @@ mysql -h $DB_HOST -u $DB_USER $DB_NAME -p < init.sql
 
 After the deployment is done, check the result
 
-**INSERT IMAGE HERE**
-**INSERT IMAGE HERE**
+![2024-10-04_143854](https://github.com/user-attachments/assets/79e59330-9e4b-4750-8e71-e94f79f3b16e)
 
 ## 3 - Deploy Auto Scaling Group
 
